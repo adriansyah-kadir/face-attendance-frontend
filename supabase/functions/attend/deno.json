@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "@frytg/dates": "jsr:@frytg/dates@^0.1.1",
+    "@hono/hono": "jsr:@hono/hono@^4.6.15",
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.47.10",
+    "zod": "npm:zod@^3.24.1"
+  }
+}
