@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: "/face-attendance-frontend",
+  basePath: "https://adriansyah-kadir.github.io/face-attendance-frontend",
   output: "export",
   trailingSlash: true,
 };
