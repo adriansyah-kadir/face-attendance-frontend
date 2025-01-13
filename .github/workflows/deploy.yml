@@ -3,46 +3,46 @@ name: Your github action
 on:
   push:
     branches:
-      # NOTE: You may want to limit the trigger branch to be "main" or "master" etc.
-      - '*'
+      - 'master'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  publish:
-    permissions:
-      contents: write
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out
-        # You may use a newer version of https://github.com/actions/checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
       - name: Generate your content
         run: npm install --legacy-peer-deps && npm run build
 
-      - name: Publish current workdir (which contains generated content) to GitHub Pages
-        uses: rayluo/github-pages-overwriter@v1.3
-
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
+          path: "./out"
 
-          # Optional.
-          #
-          # Default value "." means the root directory of your project will be published.
-          #
-          # You can use whatever directory your project uses,
-          # for example "wwwroot" (without leading "./").
-          # Such a directory does *not* have to already exist in your repo,
-          # it could be an output directory created dynamically
-          # by your static website builder.
-          source-directory: out
+    deploy:
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
 
-          # Optional. Default value "gh-pages".
-          # It specifies the temporary branch which hosts the static website.
-          # Each build will REMOVE this branch and replace it with new content.
-          # (If you want to keep your old "gh-pages" branch,
-          # you should define a different target branch for this GPO action to work with.)
-          target-branch: gh-pages
+      runs-on: ubuntu-latest
+      needs: build
+
+      steps:
+        - name: Publish to GitHub Pages 🚀
+          id: deployment
+          uses: actions/deploy-pages@v4
