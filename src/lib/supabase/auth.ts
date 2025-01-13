@@ -1,7 +1,11 @@
 import { supabase } from "./client";
 
-export function googleSignIn() {
-    supabase().auth.signInWithOAuth({
-        provider: "google",
-    })
+export function googleSignIn(basePath = "/") {
+  supabase().auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: basePath,
+    },
+  });
 }
+

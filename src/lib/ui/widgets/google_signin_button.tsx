@@ -5,6 +5,6 @@ import React from 'react'
 
 export default function GoogleSignInButton() {
   return (
-    <Button onPress={googleSignIn}>Google</Button>
+    <Button onPress={() => googleSignIn(process.env.NEXT_PUBLIC_BASE_PATH)}>Google</Button>
   )
 }
