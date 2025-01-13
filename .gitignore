@@ -2,9 +2,6 @@
 #
 #
 
-.out/
-out/
-
 # dependencies
 /node_modules
 /.pnp
