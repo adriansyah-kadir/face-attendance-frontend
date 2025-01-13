@@ -1,8 +1,10 @@
 import { SessionContext } from "@/lib/providers/session";
 import { useFacesPending } from "@/lib/queries/faces";
 import { supabase } from "@/lib/supabase/client";
+import { useRealtimeSettings } from "@/lib/supabase/realtime/settings";
 import { getPublicURLFormFullPath } from "@/lib/supabase/storage";
 import { Tables } from "@/lib/supabase/types";
+import { getany } from "@/lib/utils";
 import {
   Button,
   Card,
@@ -81,6 +83,7 @@ function ReviewPending({
 }
 
 function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
+  const settings = useRealtimeSettings()
   const session = useContext(SessionContext);
   const queryClient = useQueryClient();
   const acceptMutation = useMutation({
@@ -92,7 +95,7 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
       formData.set("file", blob);
       formData.set("token", session.access_token);
       const response = await ky
-        .post(`${process.env.NEXT_PUBLIC_SERVICE_URL}/faces`, {
+        .post(`${getany(settings, ["BACKEND_SERVER", "value"], "http://localhost:9898")}/faces`, {
           json: {
             request_id: face.id,
             token: session.access_token,
