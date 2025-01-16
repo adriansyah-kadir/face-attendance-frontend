@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: "/face-attendance-frontend",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   output: "export",
   trailingSlash: true,
 };

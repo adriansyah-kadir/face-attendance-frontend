@@ -16,7 +16,7 @@ function memberStatusColor(status?: string | null) {
   }
 }
 
-export default function MembersTable() {
+export default function MembersTable(props: { search?: string, status?: string }) {
   const membersQuery = useQuery({
     initialData: [],
     queryKey: ["member-list", "faces-list"],
@@ -55,7 +55,14 @@ export default function MembersTable() {
         </TableColumn>
       </TableHeader>
       <TableBody isLoading={membersQuery.isFetching} loadingContent={<Spinner label="Loading ..." />}>
-        {membersQuery.data.map(member => (
+        {membersQuery.data.filter(e => {
+          const search = props.search?.toLowerCase() ?? ''
+          const name = e.name?.toLowerCase().includes(search)
+          const uid = e.uid?.toLowerCase().includes(search)
+          const email = e.email?.includes(search)
+          const status = props.status === undefined ? true : props.status === e.status
+          return name || uid || email && status
+        }).map(member => (
           <TableRow key={member.id}>
             <TableCell>
               <User name={member.name} description={member.email} avatarProps={{ src: getPublicURLFormFullPath(member.picture), size: "sm" }} />
