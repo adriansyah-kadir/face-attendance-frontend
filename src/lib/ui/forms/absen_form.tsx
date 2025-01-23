@@ -26,7 +26,7 @@ export default function AbsenForm() {
 
 function AbsenCard(props: { cam?: MediaDeviceInfo }) {
   const container = useRef<HTMLDivElement>(null);
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(true);
 
   useEffect(() => {
     if (container.current) {
