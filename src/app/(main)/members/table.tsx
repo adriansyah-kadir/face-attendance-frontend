@@ -7,6 +7,8 @@ import { InfoIcon, Trash2Icon, UserRoundPenIcon } from "lucide-react";
 import { DateTime } from "luxon";
 import ReviewPendingModal from "./review_pending";
 import { getPublicURLFormFullPath } from "@/lib/supabase/storage";
+import ReviewAcceptedModal from "./review_accepted";
+import ReviewMemberModal from "./review_member";
 
 function memberStatusColor(status?: string | null) {
   switch (status) {
@@ -61,7 +63,7 @@ export default function MembersTable(props: { search?: string, status?: string }
           const uid = e.uid?.toLowerCase().includes(search)
           const email = e.email?.includes(search)
           const status = props.status === undefined ? true : props.status === e.status
-          return name || uid || email && status
+          return (name || uid || email) && status
         }).map(member => (
           <TableRow key={member.id}>
             <TableCell>
@@ -78,12 +80,8 @@ export default function MembersTable(props: { search?: string, status?: string }
               </Chip>
             </TableCell>
             <TableCell>
-              <Tooltip content="Edit" placement="left">
-                <Button size="sm" isIconOnly variant="light"><UserRoundPenIcon strokeWidth={1.5} size={16} /></Button>
-              </Tooltip>
-              <Tooltip content="Hapus" placement="left">
-                <Button size="sm" isIconOnly variant="light" color="danger"><Trash2Icon strokeWidth={1.5} size={16} /></Button>
-              </Tooltip>
+              <ReviewMemberModal member={member} />
+              <ReviewAcceptedModal profile_id={member.id!} />
               <ReviewPendingModal member={member} />
             </TableCell>
           </TableRow>

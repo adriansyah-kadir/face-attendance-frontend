@@ -33,7 +33,7 @@ export default function ReviewPendingModal({
   const modal = useDisclosure();
   return (
     <>
-      <Tooltip content="Review Pending" placement="left">
+      <Tooltip content="Review Pending" placement="left" delay={1000}>
         <Button
           onPress={modal.onOpen}
           size="sm"

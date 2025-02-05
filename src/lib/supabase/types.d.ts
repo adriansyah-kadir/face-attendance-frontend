@@ -184,6 +184,7 @@ export type Database = {
       faces: {
         Row: {
           created_at: string | null
+          id: number | null
           image: string | null
           profile_id: string | null
           status: string | null

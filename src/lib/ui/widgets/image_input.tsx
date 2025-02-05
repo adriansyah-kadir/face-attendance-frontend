@@ -13,11 +13,12 @@ type Props = {
   onPublicUrl?: (url: string) => void,
   onPick?: () => void,
   path?: string,
+  folder?: string,
 } & AvatarProps
 
 export default function ImageInput(props: Props) {
-  const { name, baseClassName, uploadFile, onUploaded, onPick, path, ...avatarProps } = props
-  const uploadMutation = useMediaUpload()
+  const { name, baseClassName, uploadFile, onUploaded, onPick, path, folder, ...avatarProps } = props
+  const uploadMutation = useMediaUpload(folder)
   const avatarColor = useMemo(() => {
     if (uploadMutation.isSuccess) return "success";
     if (uploadMutation.isError) return "danger";

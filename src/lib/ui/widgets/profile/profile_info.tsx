@@ -25,7 +25,7 @@ function ProfileDescription() {
   return (
     <div>
       <h2 className="text-xl leading-none">{profile?.name}</h2>
-      <small className="leading-none">@T3121018</small>
+      <small className="leading-none">{profile?.uid}</small>
     </div>
   )
 }
@@ -36,7 +36,7 @@ function ProfileHeader({ actions }: { actions?: ReactNode }) {
   return (
     <div className="min-h-[40px] max-h-[100px] h-[6vw] flex items-start gap-5 justify-between mt-2">
       <div className="min-w-[80px] max-w-[200px] w-[12vw] h-full overflow-visible flex-shrink-0 flex flex-col-reverse">
-        <Avatar className="w-full h-auto aspect-square flex-shrink-0" src={getPublicURLFormFullPath(profile?.picture)} showFallback isBordered />
+        <Avatar className="w-full h-auto aspect-square flex-shrink-0" src={getPublicURLFormFullPath(profile?.picture)} isBordered />
       </div>
       <div className="h-full overflow-visible flex flex-col-reverse justify-end">
         {actions}

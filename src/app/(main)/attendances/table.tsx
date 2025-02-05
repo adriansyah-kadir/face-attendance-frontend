@@ -45,7 +45,7 @@ export default function MembersTable(props: { today?: boolean, search?: string }
         <TableColumn>Nama</TableColumn>
         <TableColumn>Image</TableColumn>
         <TableColumn align="center">Persentase</TableColumn>
-        <TableColumn align="center">Aksi</TableColumn>
+        {/* <TableColumn align="center">Aksi</TableColumn> */}
       </TableHeader>
       <TableBody
         isLoading={attendancesQuery.isFetching}
@@ -88,13 +88,13 @@ export default function MembersTable(props: { today?: boolean, search?: string }
             <TableCell>
               {(getany(attendance.data, ["similarity"], 0)! * 100).toFixed(2)}%
             </TableCell>
-            <TableCell>
-              <Tooltip content="Hapus">
-                <Button size="sm" isIconOnly variant="light" color="danger">
-                  <Trash2Icon strokeWidth={1.5} size={16} />
-                </Button>
-              </Tooltip>
-            </TableCell>
+            {/* <TableCell> */}
+            {/*   <Tooltip content="Hapus"> */}
+            {/*     <Button size="sm" isIconOnly variant="light" color="danger"> */}
+            {/*       <Trash2Icon strokeWidth={1.5} size={16} /> */}
+            {/*     </Button> */}
+            {/*   </Tooltip> */}
+            {/* </TableCell> */}
           </TableRow>
         ))}
       </TableBody>

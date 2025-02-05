@@ -75,6 +75,7 @@ function UploadModal(props: {
       <ModalBody className="w-full">
         {props.files.map((img, i) => (
           <ImageInput
+            folder="faces"
             onUploaded={data => {
               setFilesUrl(prev => {
                 prev[i] = data.fullPath
