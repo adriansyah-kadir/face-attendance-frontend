@@ -43,7 +43,7 @@ app.post("/", async (c) => {
     const uploadFile = await supabase.storage
       .from("media")
       .upload(
-        `/${dataParsed.data.label}/${crypto.randomUUID()}`,
+        `/${dataParsed.data.label}/attend/${crypto.randomUUID()}`,
         dataParsed.data.file,
       );
     if (uploadFile.error)
