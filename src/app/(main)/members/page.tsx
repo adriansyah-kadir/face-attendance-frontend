@@ -25,9 +25,9 @@ export default function MembersPage() {
       <div className="max-w-[1024px] mx-auto mt-10">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl text-white font-bold">Anggota</h2>
-          <Button color="primary" endContent={<CirclePlusIcon size={18} />}>
-            Tambah
-          </Button>
+          {/* <Button color="primary" endContent={<CirclePlusIcon size={18} />}> */}
+          {/*   Tambah */}
+          {/* </Button> */}
         </div>
         <div className="flex flex-wrap gap-3 items-center my-5">
           <Input

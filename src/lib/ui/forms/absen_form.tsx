@@ -1,14 +1,12 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@nextui-org/card";
+import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import MediaDevicesSelect from "../widgets/devices_select";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Expand, Shrink } from "lucide-react";
 import AbsenLiveData from "../widgets/absen_live_data";
 import AbsenRTCCam from "../widgets/absen_rtc_cam";
-import { cn } from "@nextui-org/react";
-import { Toaster } from "sonner";
 
 export default function AbsenForm() {
   const [cam, setCam] = useState<MediaDeviceInfo | undefined>(undefined);
@@ -17,10 +15,13 @@ export default function AbsenForm() {
 
   return (
     <Card className="max-w-sm w-full">
-      <CardHeader>Absen</CardHeader>
+      <CardHeader>Live Absen</CardHeader>
       <CardBody className="gap-2">
-        <MediaDevicesSelect label="Cam" placeholder="-" onSelection={setCam} />
+        <MediaDevicesSelect label="Pilih Kamera" placeholder="-" onSelection={setCam} />
       </CardBody>
+      <CardFooter>
+        <small>Daftarkan wajah anda pada Page <a className="text-blue-400" href="/profile">Profile</a> anda</small>
+      </CardFooter>
     </Card>
   );
 }

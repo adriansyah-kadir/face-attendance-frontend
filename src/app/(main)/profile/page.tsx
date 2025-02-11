@@ -2,7 +2,7 @@
 
 import { ProfileContext } from "@/lib/providers/profile"
 import { Tab, Tabs } from "@nextui-org/react"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import ProfileInfo from "@/lib/ui/widgets/profile/profile_info"
 import FacesTab from "@/lib/ui/widgets/profile/tabs/faces"
 import SettingsTab from "@/lib/ui/widgets/profile/tabs/settings_tab"
@@ -10,11 +10,18 @@ import ProfileUpdate from "@/lib/ui/widgets/profile/profile_update"
 import Show from "@/lib/ui/widgets/show"
 import useProfile from "@/lib/states/profile"
 import { getPublicURLFormFullPath } from "@/lib/supabase/storage"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { SessionContext } from "@/lib/providers/session"
 
 export default function ProfilePage() {
   const searchParams = useSearchParams()
+  const session = useContext(SessionContext)
   const { profile, isMe } = useProfile(searchParams)
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session === null) router.push("/signin");
+  }, [session])
 
   return (
     <ProfileContext.Provider value={profile}>

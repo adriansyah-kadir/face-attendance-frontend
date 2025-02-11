@@ -7,6 +7,7 @@ import { useWebRTC } from "@/lib/webrtc";
 import { Alert, Button, Spinner } from "@nextui-org/react";
 import ky from "ky";
 import { CheckCircle, InfoIcon } from "lucide-react";
+import { off } from "process";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
@@ -37,23 +38,18 @@ export default function AbsenRTCCam(props: { deviceId?: string }) {
     }
   }
 
+  async function connect() {
+    const answer = await ky.post(`${settings["BACKEND_SERVER"].value}/offer`, {
+      json: rtc.pc?.localDescription,
+    }).json<RTCSessionDescription>()
+    rtc.pc?.setRemoteDescription(answer);
+  }
+
   useEffect(() => {
     // toast.info("Ice Gathering", { description: rtc.iceGatheringState });
     setInfo({ title: "Ice Gathering", description: rtc.iceGatheringState, isLoading: rtc.iceGatheringState === "gathering" })
     if (rtc.iceGatheringState === "complete" && "BACKEND_SERVER" in settings) {
-      ky.post(`${settings["BACKEND_SERVER"].value}/offer`, {
-        json: rtc.pc?.localDescription,
-      })
-        .json<RTCSessionDescription>()
-        .then(
-          (answer) => {
-            rtc.pc?.setRemoteDescription(answer);
-            // setInfo({ title: "Connected", description: "server: " + settings["BACKEND_SERVER"].value, isSuccess: true })
-          },
-          (err) => {
-            setInfo({ title: "Error", description: String(err), isError: true })
-          },
-        );
+      connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
     }
   }, [rtc.iceGatheringState, settings]);
 
@@ -90,7 +86,9 @@ export default function AbsenRTCCam(props: { deviceId?: string }) {
             icon={info.isLoading ? <Spinner size="sm" /> : undefined}
             title={info.title}
             description={info.description}
-            endContent={info.isError ? <Button size="sm">Reconnect</Button> : undefined}
+            endContent={info.isError ? <Button size="sm" onPress={() => {
+              location.reload()
+            }}>Reconnect</Button> : undefined}
           />
         )}
         <Webcam
