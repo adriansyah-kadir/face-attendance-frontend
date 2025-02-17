@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../supabase/client";
 
+export async function isHasRegisterFace(id: string): Promise<boolean> {
+  const face = await supabase().from("faces").select().eq("profile_id", id).single()
+  return !!face.data
+}
+
 export function useFacesQuery(profile_id: string, status = ['accepted', 'pending']) {
   const facesQuery = useQuery({
     initialData: [],

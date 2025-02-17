@@ -37,7 +37,7 @@ export default function FacesUploadForm() {
   )
 }
 
-function UploadModal(props: {
+export function UploadModal(props: {
   onClose: () => void,
   files: File[]
 }) {
