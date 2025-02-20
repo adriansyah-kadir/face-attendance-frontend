@@ -1,4 +1,6 @@
+import { toast } from "sonner";
 import { Detection } from "./detection";
+import ExcelJS from "exceljs"
 
 export function elementFit(ref?: HTMLElement | null) {
   if (!ref) return;
@@ -127,4 +129,49 @@ export function getany<T>(
   }
 
   return value ?? defaultValue;
+}
+
+export function downloadJSON(data: object, filename = "data.json") {
+  // Convert object to JSON string
+  const jsonString = JSON.stringify(data, null, 2); // Pretty format with 2 spaces
+
+  // Create a Blob with MIME type application/json
+  const blob = new Blob([jsonString], { type: "application/json" });
+
+  // Create a temporary anchor element
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+
+  // Append to body, trigger click, then remove it
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+export async function saveToExcel<T extends object>(data: Array<T>, filename = 'output.xlsx') {
+  if (!Array.isArray(data) || data.length === 0) {
+    toast.error('Data tidak boleh kosong')
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet1');
+
+  // Extract column names dynamically from the first object
+  const columns = Object.keys(data[0]).map(key => ({ header: key, key }));
+  worksheet.columns = columns;
+
+  // Add rows
+  data.forEach(item => {
+    worksheet.addRow(item);
+  });
+
+  // Save file
+  let buffer = await workbook.xlsx.writeBuffer();
+  let blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  let link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }

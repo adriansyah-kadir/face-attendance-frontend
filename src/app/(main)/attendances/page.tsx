@@ -3,13 +3,39 @@ import { Button, Input } from "@nextui-org/react";
 import MembersTable from "./table";
 import {
   CalendarIcon,
+  DownloadIcon,
   SearchIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useAttendancesQuery } from "@/lib/queries/attendances";
+import { getany, saveToExcel } from "@/lib/utils";
+import { getPublicURLFormFullPath } from "@/lib/supabase/storage";
 
 export default function MembersPage() {
   const [today, setToday] = useState(true);
   const [search, setSearch] = useState("")
+  const attendances = useAttendancesQuery(today)
+  const filtered = useMemo(() => attendances.data.filter((e) => {
+    const keyword = search.toLowerCase() ?? ''
+    const name = e.profiles?.name?.toLowerCase().includes(keyword)
+    const uid = e.profiles?.uid?.toLowerCase().includes(keyword)
+    const email = e.profiles?.user?.email?.includes(keyword)
+    return name || uid || email
+  }), [search, attendances])
+
+
+  async function download() {
+    await saveToExcel(filtered.map(e => {
+      return {
+        id: e.id,
+        tanggal: e.created_at,
+        nama: e.profiles?.name,
+        uid: e.profiles?.uid,
+        similarity: getany(e.data, ["similarity"], 0)! * 100,
+        image: getPublicURLFormFullPath(getany(e.data, ["image"]))
+      }
+    }), "data.xlsx")
+  }
 
   return (
     <div className="p-5 bg-gradient h-full">
@@ -34,8 +60,16 @@ export default function MembersPage() {
           >
             Today
           </Button>
+          <Button
+            color="primary"
+            size="sm"
+            startContent={<DownloadIcon size={14} />}
+            onPress={download}
+          >
+            Download
+          </Button>
         </div>
-        <MembersTable today={today} search={search}/>
+        <MembersTable attendances={filtered} isFetching={attendances.isFetching} />
       </div>
     </div>
   );
