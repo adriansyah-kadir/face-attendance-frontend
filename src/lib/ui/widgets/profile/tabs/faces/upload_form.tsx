@@ -8,6 +8,7 @@ import ImageInput from "../../../image_input"
 import { supabase } from "@/lib/supabase/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Tables } from "@/lib/supabase/types"
+import { toast } from "sonner"
 
 export default function FacesUploadForm() {
   const facesModal = useDisclosure({})
@@ -46,7 +47,10 @@ export default function FacesUploadForm() {
               </ModalBody>
               <ModalFooter>
                 <Button onPress={onClose} variant="bordered">Kembali</Button>
-                <Button onPress={openModal} color="primary">Pilih Foto</Button>
+                <Button onPress={() => {
+                  openModal()
+                  onClose()
+                }} color="primary">Pilih Foto</Button>
               </ModalFooter>
             </>
           )}
@@ -79,7 +83,12 @@ export function UploadModal(props: {
       return result.data;
     },
     onSuccess: () => {
+      toast.success("Sukses upload fot wajah")
       queryClient.invalidateQueries({ queryKey: ["faces-list"] })
+      props.onClose()
+    },
+    onError(e) {
+      toast.error(`Error: ${e.name}`)
     }
   })
   const submitColor = useMemo(() => {
