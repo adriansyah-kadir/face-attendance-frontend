@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/lib/providers";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
+import RegisterFaceInfo from "@/lib/ui/widgets/register-face-info";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
       >
         <Providers>
           <Suspense>
+            <RegisterFaceInfo />
             <Toaster richColors />
             {children}
           </Suspense>

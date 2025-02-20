@@ -3,6 +3,22 @@ import { ProfileContext } from "../providers/profile";
 import { ReadonlyURLSearchParams, usePathname } from "next/navigation";
 import { supabase } from "../supabase/client";
 
+export function useHasRegisterFace(profile: ContextType<typeof ProfileContext>) {
+  const [hasRegistered, setHasRegistered] = useState<boolean>()
+
+  useEffect(() => {
+    if (profile) {
+      supabase().from("faces").select().eq("profile_id", profile.id).then((v) => {
+        setHasRegistered((v.count ?? 0) > 0)
+      })
+    } else if (profile === null) {
+      setHasRegistered(false)
+    }
+  }, [profile])
+
+  return hasRegistered
+}
+
 export default function useProfile(searchParams: ReadonlyURLSearchParams) {
   const [profile, setProfile] = useState<ContextType<typeof ProfileContext>>()
   const pathname = usePathname()

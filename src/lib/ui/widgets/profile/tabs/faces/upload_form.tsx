@@ -3,7 +3,7 @@
 import { pickFiles } from "@/lib/utils"
 import { Button, Card, CardBody, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react"
 import { CircleArrowRightIcon, ImageIcon } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ImageInput from "../../../image_input"
 import { supabase } from "@/lib/supabase/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -12,12 +12,20 @@ import { Tables } from "@/lib/supabase/types"
 export default function FacesUploadForm() {
   const facesModal = useDisclosure({})
   const [files, setFiles] = useState<File[]>([])
+  const [showRegistrasi, setShowRegistrasi] = useState(false)
 
   async function openModal() {
     const files = await pickFiles({ multiple: true, accept: "image/*" })
     setFiles(files)
     if (files.length > 0) facesModal.onOpen()
   }
+
+  useEffect(() => {
+    const s = new URLSearchParams(location.search)
+    if (s.has("registerFaceForm")) {
+      setShowRegistrasi(true)
+    }
+  }, [])
 
   return (
     <>
@@ -27,6 +35,23 @@ export default function FacesUploadForm() {
           <small>Tambah Wajah</small>
         </CardBody>
       </Card>
+
+      <Modal isOpen={showRegistrasi} onOpenChange={setShowRegistrasi} hideCloseButton>
+        <ModalContent>
+          {onClose => (
+            <>
+              <ModalHeader>Format Registrasi Foto</ModalHeader>
+              <ModalBody>
+                Untuk format foto registrasi harus menggunakan foto yang memiliki 1 wajah jika lebih atau kurang foto tidak dapat diregistrasi
+              </ModalBody>
+              <ModalFooter>
+                <Button onPress={onClose} variant="bordered">Kembali</Button>
+                <Button onPress={openModal} color="primary">Pilih Foto</Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
       <Modal hideCloseButton isOpen={facesModal.isOpen} onOpenChange={facesModal.onOpenChange} scrollBehavior="outside">
         <ModalContent>
