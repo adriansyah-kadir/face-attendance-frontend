@@ -19,7 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import ky from "ky";
+import ky, { HTTPError } from "ky";
 import { EyeIcon, ListTodoIcon } from "lucide-react";
 import Link from "next/link";
 import { useContext } from "react";
@@ -88,7 +88,7 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
   const queryClient = useQueryClient();
   const acceptMutation = useMutation({
     mutationFn: async () => {
-      if (!session || session.user.role != "Manager") throw Error("Authorization Error");
+      if (!session || session.user.role !== "manager") throw Error("Authorization Error");
 
       const response = await ky
         .post(`${getany(settings, ["BACKEND_SERVER", "value"], "http://localhost:9898")}/faces`, {
@@ -101,15 +101,21 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
           timeout: false,
         })
         .json<Tables<"face_embeddings">>();
-      queryClient.invalidateQueries({ queryKey: ["faces-list"] });
       return response;
     },
     async onSuccess() {
       toast.success("Registrasi wajah sukses")
       await supabase().from("face_requests").delete().eq("id", face.id);
+      queryClient.invalidateQueries({ queryKey: ["faces-list"] });
     },
-    onError(err) {
-      toast.error(err.message);
+    async onError(err) {
+      if (err instanceof HTTPError) {
+        const data = await err.response.json()
+        toast.error(data["detail"])
+      } else {
+
+        toast.error(err.message);
+      }
     }
   });
 
