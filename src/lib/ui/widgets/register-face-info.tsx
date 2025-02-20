@@ -14,7 +14,8 @@ export default function RegisterFaceInfo() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    if (hasRegistered === false && session?.user.role !== "manager") setShow(true)
+    const s = new URLSearchParams(location.search)
+    if (hasRegistered === false && session?.user.role !== "manager" && !s.has("registerFaceForm")) setShow(true)
   }, [hasRegistered])
 
   return (
