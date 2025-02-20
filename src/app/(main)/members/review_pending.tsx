@@ -168,7 +168,7 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
           size="sm"
           isIconOnly
           as={Link}
-          href={face.image!}
+          href={getPublicURLFormFullPath(face.image)}
           target="_blank"
         >
           <EyeIcon size={18} />
