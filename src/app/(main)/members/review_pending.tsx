@@ -22,7 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ky from "ky";
 import { EyeIcon, ListTodoIcon } from "lucide-react";
 import Link from "next/link";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { toast } from "sonner";
 
 export default function ReviewPendingModal({
@@ -88,12 +88,8 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
   const queryClient = useQueryClient();
   const acceptMutation = useMutation({
     mutationFn: async () => {
-      if (!session) throw Error("session error");
+      if (!session || session.user.role != "Manager") throw Error("Authorization Error");
 
-      const blob = await ky.get(getPublicURLFormFullPath(face.image)!).blob();
-      const formData = new FormData();
-      formData.set("file", blob);
-      formData.set("token", session.access_token);
       const response = await ky
         .post(`${getany(settings, ["BACKEND_SERVER", "value"], "http://localhost:9898")}/faces`, {
           json: {
@@ -101,12 +97,20 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
             token: session.access_token,
           },
           credentials: "include",
+          keepalive: true,
+          timeout: false,
         })
         .json<Tables<"face_embeddings">>();
-      await supabase().from("face_requests").delete().eq("id", face.id);
       queryClient.invalidateQueries({ queryKey: ["faces-list"] });
       return response;
     },
+    async onSuccess() {
+      toast.success("Registrasi wajah sukses")
+      await supabase().from("face_requests").delete().eq("id", face.id);
+    },
+    onError(err) {
+      toast.error(err.message);
+    }
   });
 
   const declineMutation = useMutation({
@@ -116,37 +120,27 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
         .storage.from(bucket)
         .remove([nodes.join("/")]);
       await supabase().from("face_requests").delete().eq("id", face.id);
+    },
+    onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["faces-list"] });
     },
+    onError(err) {
+      toast.error(err.message);
+    }
   });
 
-  useEffect(() => {
-    if (acceptMutation.isError) {
-      toast.error(acceptMutation.error.message);
-    }
-  }, [acceptMutation.isError]);
-
-  useEffect(() => {
-    if (declineMutation.isError) {
-      toast.error(declineMutation.error.message);
-    }
-  }, [declineMutation.isError]);
-
   return (
-    <Card className="w-full h-auto aspect-video">
+    <Card isFooterBlurred className="border-none min-w-60 aspect-video" radius="lg">
       <Image
         className="object-cover"
-        height={200}
         src={getPublicURLFormFullPath(face.image)}
-        width={200}
       />
-      <CardFooter className="gap-3 before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10 bg-black/50 backdrop-blur-sm">
+      <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
         <Button
           className="text-tiny text-white"
           color="danger"
           radius="lg"
           size="sm"
-          variant="bordered"
           isLoading={declineMutation.isPending}
           onPress={() => declineMutation.mutate()}
         >
@@ -175,5 +169,47 @@ function FaceRequestCard({ face }: { face: Tables<"face_requests"> }) {
         </Button>
       </CardFooter>
     </Card>
+    // <Card className="w-full h-auto aspect-video">
+    //   <Image
+    //     className="object-cover"
+    //     height={200}
+    //     src={getPublicURLFormFullPath(face.image)}
+    //     width={200}
+    //   />
+    //   <CardFooter className="gap-3 before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10 bg-black/50 backdrop-blur-sm">
+    //     <Button
+    //       className="text-tiny text-white"
+    //       color="danger"
+    //       radius="lg"
+    //       size="sm"
+    //       variant="bordered"
+    //       isLoading={declineMutation.isPending}
+    //       onPress={() => declineMutation.mutate()}
+    //     >
+    //       Decline
+    //     </Button>
+    //     <Button
+    //       className="text-tiny text-white"
+    //       color="success"
+    //       radius="lg"
+    //       size="sm"
+    //       isLoading={acceptMutation.isPending}
+    //       onPress={() => acceptMutation.mutate()}
+    //     >
+    //       Accept
+    //     </Button>
+    //     <Button
+    //       className="text-tiny"
+    //       radius="lg"
+    //       size="sm"
+    //       isIconOnly
+    //       as={Link}
+    //       href={getPublicURLFormFullPath(face.image)}
+    //       target="_blank"
+    //     >
+    //       <EyeIcon size={18} />
+    //     </Button>
+    //   </CardFooter>
+    // </Card>
   );
 }

@@ -2,7 +2,7 @@ import { useFacesQuery } from "@/lib/queries/faces";
 import { supabase } from "@/lib/supabase/client";
 import { getPublicURLFormFullPath } from "@/lib/supabase/storage";
 import { Tables } from "@/lib/supabase/types";
-import { Button, Card, CardBody, CardFooter, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Tooltip, useDisclosure } from "@nextui-org/react";
+import { Image, Button, Card, CardBody, CardFooter, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Tooltip, useDisclosure } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2Icon, UserCheck } from "lucide-react";
 
@@ -66,13 +66,37 @@ function Face({ face }: { face: Tables<"faces"> }) {
   })
 
   return (
-    <Card>
-      <CardBody className="p-0">
-        <img src={getPublicURLFormFullPath(face.image)} />
-      </CardBody>
-      <CardFooter>
+    <Card isFooterBlurred className="border-none min-w-60 aspect-video" radius="lg">
+      <Image
+        className="object-cover"
+        src={getPublicURLFormFullPath(face.image)}
+      />
+      <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
+        <p className="text-tiny">Status</p>
+        <Button
+          className="text-tiny text-white"
+          color={face.status == "accepted" ? "success" : "default"}
+          radius="lg"
+          size="sm"
+          variant="shadow"
+        >
+          {face.status}
+        </Button>
         <Button isLoading={deleteMutation.isPending} onPress={() => deleteMutation.mutate()} isIconOnly size="sm"><Trash2Icon size={18} /></Button>
       </CardFooter>
     </Card>
+    // <Card>
+    //   <CardBody className="p-0">
+    //     <Image
+    //       className="object-cover"
+    //       height={200}
+    //       src={getPublicURLFormFullPath(face.image)}
+    //       width={200}
+    //     />
+    //   </CardBody>
+    //   <CardFooter>
+    //     <Button isLoading={deleteMutation.isPending} onPress={() => deleteMutation.mutate()} isIconOnly size="sm"><Trash2Icon size={18} /></Button>
+    //   </CardFooter>
+    // </Card>
   )
 }
