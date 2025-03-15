@@ -12,7 +12,7 @@ import Webcam from "react-webcam";
 
 export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out" }) {
   const rtc = useWebRTC({
-    iceServers: [{ urls: ['stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun3.l.google.com:19302'] }]
+    iceServers: [{ urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19305"] }]
   });
   const settings = useRealtimeSettings();
   const detections = useDetectionsDataChannel();
