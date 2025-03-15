@@ -76,7 +76,7 @@ export default function MembersTable(props: { attendances: ReturnType<typeof use
               {(getany(attendance.data, ["similarity"], 0)! * 100).toFixed(2)}%
             </TableCell>
             <TableCell>
-              {absenType(getany(attendance.data, ["type"], "in")!)}
+              {absenType(getany(attendance.data, ["absen_type"], "in")!)}
             </TableCell>
           </TableRow>
         ))}

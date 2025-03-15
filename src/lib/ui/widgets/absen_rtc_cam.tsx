@@ -7,10 +7,8 @@ import { useWebRTC } from "@/lib/webrtc";
 import { Alert, Button, Spinner } from "@nextui-org/react";
 import ky from "ky";
 import { CheckCircle, InfoIcon } from "lucide-react";
-import { off } from "process";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { toast } from "sonner";
 
 export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out" }) {
   const rtc = useWebRTC();
@@ -41,8 +39,9 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
   async function connect() {
     const answer = await ky.post(`${settings["BACKEND_SERVER"].value}/offer`, {
       json: {
-        ...rtc.pc?.localDescription,
-        absen: props.absenType
+        absen_type: props.absenType,
+        sdp: rtc.pc?.localDescription?.sdp,
+        type: rtc.pc?.localDescription?.type
       },
     }).json<RTCSessionDescription>()
     rtc.pc?.setRemoteDescription(answer);
