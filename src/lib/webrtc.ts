@@ -92,7 +92,8 @@ export function useWebRTC(
       "iceconnectionstatechange",
       onIceConnectionStateChange,
     );
-    localPeer.addEventListener("icecandidate", onIceCandidate);
+    localPeer.onicecandidate = onIceCandidate
+    // localPeer.addEventListener("icecandidate", onIceCandidate);
     localPeer.addEventListener("icecandidateerror", onIceCandidateError);
     localPeer.addEventListener("track", onTrack);
     localPeer.addEventListener("datachannel", onDataChannel);

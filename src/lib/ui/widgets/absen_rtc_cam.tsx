@@ -15,7 +15,7 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
     iceServers: [
       { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19305"] },
       {
-        urls: "relay1.expressturn.com:3478",
+        urls: "turn:relay1.expressturn.com:3478",
         username: "efYDQRDBLZG2XIHJE3",
         credential: "S9G2fDPfhpGh5ZCD"
       }
@@ -59,10 +59,20 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
   useEffect(() => {
     // toast.info("Ice Gathering", { description: rtc.iceGatheringState });
     setInfo({ title: "Ice Gathering", description: rtc.iceGatheringState, isLoading: rtc.iceGatheringState === "gathering" })
-    if (rtc.iceGatheringState === "complete" && "BACKEND_SERVER" in settings) {
-      connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
-    }
+    // if (rtc.iceGatheringState === "complete" && "BACKEND_SERVER" in settings) {
+    //   connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
+    // }
   }, [rtc.iceGatheringState, settings]);
+
+  useEffect(() => {
+    for (const candidate of rtc.iceCandidates) {
+      if (candidate.type === "relay" || candidate.type === "srflx" || candidate.type === "prflx" && "BACKEND_SERVER" in settings) {
+        rtc.pc!.onicecandidate = null
+        connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
+        break;
+      }
+    }
+  }, [rtc.iceCandidates, settings])
 
   useEffect(() => {
     // setInfo({title: rtc.connectionState})
