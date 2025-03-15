@@ -175,3 +175,8 @@ export async function saveToExcel<T extends object>(data: Array<T>, filename = '
   link.click();
   URL.revokeObjectURL(link.href);
 }
+
+export function isIPv4(text: string) {
+  const ipPattern = /\d+\.\d+\.\d+\.\d+/;  // Format IPv4: xxx.xxx.xxx.xxx
+  return ipPattern.test(text);
+}

@@ -1,7 +1,7 @@
 import { Detection, useDetectionsDataChannel } from "@/lib/detection";
 import { useProfiles } from "@/lib/states/profiles";
 import { useRealtimeSettings } from "@/lib/supabase/realtime/settings";
-import { elementDetection } from "@/lib/utils";
+import { elementDetection, isIPv4 } from "@/lib/utils";
 import { useVerificationsDataChannel, Verifications } from "@/lib/verification";
 import { useWebRTC } from "@/lib/webrtc";
 import { Alert, Button, Spinner } from "@nextui-org/react";
@@ -66,7 +66,7 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
 
   useEffect(() => {
     for (const candidate of rtc.iceCandidates) {
-      if (candidate.type === "relay" || candidate.type === "srflx" || candidate.type === "prflx" && "BACKEND_SERVER" in settings) {
+      if (candidate.relatedAddress && isIPv4(candidate.relatedAddress) && candidate.type === "relay" || candidate.type === "srflx" || candidate.type === "prflx" && "BACKEND_SERVER" in settings) {
         rtc.pc!.onicecandidate = null
         connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
         break;
