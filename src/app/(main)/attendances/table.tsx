@@ -16,6 +16,17 @@ import {
 } from "@nextui-org/react";
 import { EyeIcon } from "lucide-react";
 
+function absenType(t: string) {
+  switch (t) {
+    case "in":
+      return "Masuk"
+    case "out":
+      return "Pulang"
+    default:
+      return "Masuk"
+  }
+}
+
 export default function MembersTable(props: { attendances: ReturnType<typeof useAttendancesQuery>["data"], isFetching?: boolean }) {
   const attendancesQuery = props.attendances;
 
@@ -25,7 +36,8 @@ export default function MembersTable(props: { attendances: ReturnType<typeof use
         <TableColumn>Timestamp</TableColumn>
         <TableColumn>Nama</TableColumn>
         <TableColumn>Image</TableColumn>
-        <TableColumn align="center">Persentase</TableColumn>
+        <TableColumn >Persentase</TableColumn>
+        <TableColumn align="center">Type</TableColumn>
         {/* <TableColumn align="center">Aksi</TableColumn> */}
       </TableHeader>
       <TableBody
@@ -62,6 +74,9 @@ export default function MembersTable(props: { attendances: ReturnType<typeof use
             </TableCell>
             <TableCell>
               {(getany(attendance.data, ["similarity"], 0)! * 100).toFixed(2)}%
+            </TableCell>
+            <TableCell>
+              {absenType(getany(attendance.data, ["type"], "in")!)}
             </TableCell>
           </TableRow>
         ))}

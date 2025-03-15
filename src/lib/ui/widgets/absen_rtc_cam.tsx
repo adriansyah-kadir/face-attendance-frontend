@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { toast } from "sonner";
 
-export default function AbsenRTCCam(props: { deviceId?: string }) {
+export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out" }) {
   const rtc = useWebRTC();
   const settings = useRealtimeSettings();
   const detections = useDetectionsDataChannel();
@@ -40,7 +40,10 @@ export default function AbsenRTCCam(props: { deviceId?: string }) {
 
   async function connect() {
     const answer = await ky.post(`${settings["BACKEND_SERVER"].value}/offer`, {
-      json: rtc.pc?.localDescription,
+      json: {
+        ...rtc.pc?.localDescription,
+        absen: props.absenType
+      },
     }).json<RTCSessionDescription>()
     rtc.pc?.setRemoteDescription(answer);
   }

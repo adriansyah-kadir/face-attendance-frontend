@@ -9,7 +9,7 @@ export function useHasRegisterFace(profile: ContextType<typeof ProfileContext>) 
   useEffect(() => {
     if (profile) {
       supabase().from("faces").select().eq("profile_id", profile.id).then((v) => {
-        setHasRegistered((v.count ?? 0) > 0)
+        setHasRegistered((v.data?.length ?? 0) > 0)
       })
     } else if (profile === null) {
       setHasRegistered(false)

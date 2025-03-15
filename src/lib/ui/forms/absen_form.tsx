@@ -7,17 +7,27 @@ import { Button } from "@nextui-org/button";
 import { Expand, Shrink } from "lucide-react";
 import AbsenLiveData from "../widgets/absen_live_data";
 import AbsenRTCCam from "../widgets/absen_rtc_cam";
+import { Select, SelectItem } from "@nextui-org/react";
 
 export default function AbsenForm() {
   const [cam, setCam] = useState<MediaDeviceInfo | undefined>(undefined);
+  const [absen, setAbsen] = useState<"in" | "out">("in")
 
-  if (cam) return <AbsenCard cam={cam} />;
+  if (cam) return <AbsenCard cam={cam} absen={absen} />;
 
   return (
     <Card className="max-w-sm w-full">
       <CardHeader>Live Absen</CardHeader>
       <CardBody className="gap-2">
         <MediaDevicesSelect label="Pilih Kamera" placeholder="-" onSelection={setCam} />
+        <Select items={[{ k: "in", v: "Masuk" }, { k: "out", v: "Pulang" }]} label="Absen" selectedKeys={[absen]} onSelectionChange={v => {
+          const a = (v.currentKey ?? "in") as "in" | "out"
+          setAbsen(a)
+        }}>
+          {({ k, v }) => (
+            <SelectItem key={k}>{v}</SelectItem>
+          )}
+        </Select>
       </CardBody>
       <CardFooter>
         <small>Daftarkan wajah anda pada Page <a className="text-blue-400" href="/profile">Profile</a> anda</small>
@@ -26,7 +36,7 @@ export default function AbsenForm() {
   );
 }
 
-function AbsenCard(props: { cam?: MediaDeviceInfo }) {
+function AbsenCard(props: { cam?: MediaDeviceInfo, absen?: "in" | "out" }) {
   const container = useRef<HTMLDivElement>(null);
   const [expand, setExpand] = useState(true);
 
@@ -45,7 +55,7 @@ function AbsenCard(props: { cam?: MediaDeviceInfo }) {
       className="w-full h-full flex relative overflow-hidden"
       ref={container}
     >
-      <AbsenRTCCam deviceId={props.cam?.deviceId} />
+      <AbsenRTCCam deviceId={props.cam?.deviceId} absenType={props.absen} />
       <AbsenLiveData />
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 hover:-translate-y-0 scale-80 hover:scale-100 transition-all">
         <div className="flex items-center gap-3 p-3 bg-black ring rounded-full mb-3">

@@ -22,7 +22,7 @@ export default function MemberView() {
   })
 
   return (
-    <div>
+    <div >
       <h4 className="text-lg mb-5">Data Wajah Absensi</h4>
       <div className="flex flex-wrap overflow-y-visible gap-3">
         <For items={facesQuery.data}>
