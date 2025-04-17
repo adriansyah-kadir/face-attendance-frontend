@@ -87,6 +87,7 @@ export default function AbsenLiveData() {
                     <h4>{getany(profiles, [data.profile_id, "name"], "...")}</h4>
                     <p>{new Date(data.created_at!).toLocaleString("id")}</p>
                     <p>{(getany(data.data, ["similarity"], 0)! * 100).toFixed(2)}%</p>
+                    <p>{getany(data.data, ["absen_type"], "in")!}</p>
                   </CardBody>
                   <CardFooter className="items-start">
                     <Button variant="light" size="sm" isIconOnly>
