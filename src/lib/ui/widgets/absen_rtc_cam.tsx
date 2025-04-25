@@ -16,15 +16,10 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
     iceServers: [
       { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19305", "stun:stun.l.google.com:19302"] },
       {
-        "urls": "turn:0.tcp.ap.ngrok.io:13843?transport=tcp",
-        "username": "ok",
-        "credential": "ok"
+        urls: "turn:relay1.expressturn.com:3478",
+        username: "efA4AMH187ZJE3FVTE",
+        credential: "lgKcjVX4TLWEWbyx"
       }
-      // {
-      //   urls: "turn:relay1.expressturn.com:3478",
-      //   username: "efA4AMH187ZJE3FVTE",
-      //   credential: "lgKcjVX4TLWEWbyx"
-      // }
     ],
   });
   const settings = useRealtimeSettings();
