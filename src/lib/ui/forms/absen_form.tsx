@@ -12,8 +12,9 @@ import { Select, SelectItem } from "@nextui-org/react";
 export default function AbsenForm() {
   const [cam, setCam] = useState<MediaDeviceInfo | undefined>(undefined);
   const [absen, setAbsen] = useState<"in" | "out">("in")
+  const [ice, setIce] = useState<"all" | "relay">("all")
 
-  if (cam) return <AbsenCard cam={cam} absen={absen} />;
+  if (cam) return <AbsenCard cam={cam} absen={absen} iceType={ice} />;
 
   return (
     <Card className="max-w-sm w-full">
@@ -28,6 +29,10 @@ export default function AbsenForm() {
             <SelectItem key={k}>{v}</SelectItem>
           )}
         </Select>
+        <Select label="Ice Transport Policy" selectedKeys={[ice]} onSelectionChange={v => setIce((v.currentKey as any) ?? "all")}>
+          <SelectItem key={"all"}>All</SelectItem>
+          <SelectItem key={"relay"}>Relay</SelectItem>
+        </Select>
       </CardBody>
       <CardFooter>
         <small>Daftarkan wajah anda pada Page <a className="text-blue-400" href="/profile">Profile</a> anda</small>
@@ -36,7 +41,7 @@ export default function AbsenForm() {
   );
 }
 
-function AbsenCard(props: { cam?: MediaDeviceInfo, absen?: "in" | "out" }) {
+function AbsenCard(props: { cam?: MediaDeviceInfo, absen?: "in" | "out", iceType?: "all" | "relay" }) {
   const container = useRef<HTMLDivElement>(null);
   const [expand, setExpand] = useState(true);
 
@@ -55,7 +60,7 @@ function AbsenCard(props: { cam?: MediaDeviceInfo, absen?: "in" | "out" }) {
       className="w-full h-full flex relative overflow-hidden"
       ref={container}
     >
-      <AbsenRTCCam deviceId={props.cam?.deviceId} absenType={props.absen} />
+      <AbsenRTCCam iceTransportPolicy={props.iceType} deviceId={props.cam?.deviceId} absenType={props.absen} />
       <AbsenLiveData />
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 hover:-translate-y-0 scale-80 hover:scale-100 transition-all">
         <div className="flex items-center gap-3 p-3 bg-black ring rounded-full mb-3">

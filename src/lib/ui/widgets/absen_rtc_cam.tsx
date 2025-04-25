@@ -10,16 +10,17 @@ import { CheckCircle, InfoIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
-export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out" }) {
+export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out", iceTransportPolicy?: RTCIceTransportPolicy}) {
   const rtc = useWebRTC({
+    iceTransportPolicy: props.iceTransportPolicy,
     iceServers: [
-      { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19305"] },
+      { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19305", "stun:stun.l.google.com:19302"] },
       {
         urls: "turn:relay1.expressturn.com:3478",
-        username: "efYDQRDBLZG2XIHJE3",
-        credential: "S9G2fDPfhpGh5ZCD"
+        username: "efA4AMH187ZJE3FVTE",
+        credential: "lgKcjVX4TLWEWbyx"
       }
-    ]
+    ],
   });
   const settings = useRealtimeSettings();
   const detections = useDetectionsDataChannel();
@@ -46,6 +47,7 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
   }
 
   async function connect() {
+    console.log(rtc.pc?.localDescription)
     const answer = await ky.post(`${settings["BACKEND_SERVER"].value}/offer`, {
       json: {
         absen_type: props.absenType,
@@ -57,6 +59,7 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
   }
 
   useEffect(() => {
+    if (rtc.iceGatheringState == "complete") return;
     // toast.info("Ice Gathering", { description: rtc.iceGatheringState });
     setInfo({ title: "Ice Gathering", description: rtc.iceGatheringState, isLoading: rtc.iceGatheringState === "gathering" })
     // if (rtc.iceGatheringState === "complete" && "BACKEND_SERVER" in settings) {
@@ -66,7 +69,7 @@ export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in"
 
   useEffect(() => {
     for (const candidate of rtc.iceCandidates) {
-      if (candidate.relatedAddress && isIPv4(candidate.relatedAddress) && candidate.type === "relay" || candidate.type === "srflx" || candidate.type === "prflx" && "BACKEND_SERVER" in settings) {
+      if (rtc.signalingState != "stable" && candidate.relatedAddress && isIPv4(candidate.relatedAddress) && candidate.type === "relay" || candidate.type === "srflx" || candidate.type === "prflx" && "BACKEND_SERVER" in settings) {
         rtc.pc!.onicecandidate = null
         connect().catch(err => setInfo({ title: "Error", description: String(err), isError: true }))
         break;
