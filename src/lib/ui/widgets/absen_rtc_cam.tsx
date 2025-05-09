@@ -6,11 +6,11 @@ import { useVerificationsDataChannel, Verifications } from "@/lib/verification";
 import { useWebRTC } from "@/lib/webrtc";
 import { Alert, Button, Spinner } from "@nextui-org/react";
 import ky from "ky";
-import { CheckCircle, InfoIcon } from "lucide-react";
+import { CheckCircle, InfoIcon, TimerIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
-export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out", iceTransportPolicy?: RTCIceTransportPolicy}) {
+export default function AbsenRTCCam(props: { deviceId?: string, absenType?: "in" | "out", iceTransportPolicy?: RTCIceTransportPolicy }) {
   const rtc = useWebRTC({
     iceTransportPolicy: props.iceTransportPolicy,
     iceServers: [
@@ -158,10 +158,21 @@ function DetectionBox({
   const profile = data ? profiles[data.label] : undefined;
   const label = profile?.name ?? data?.label ?? "Unknown";
   const status: string = data?.extra["status"] ?? "idle";
+  const loadingStart = useState<number>()
+  const loadingEnd = useState<number>()
 
   let bgColor = "red";
   if (status === "loading") bgColor = "blue";
   if (status === "success") bgColor = "green";
+
+  useEffect(() => {
+    if (status === "loading") loadingStart[1](Date.now());
+    else if (status === "success") loadingEnd[1](Date.now());
+    else {
+      loadingStart[1](undefined)
+      loadingEnd[1](undefined)
+    }
+  }, [status])
 
   return (
     <div
@@ -169,29 +180,39 @@ function DetectionBox({
       className="fixed ring"
       ref={elementDetection(detection, videoEl)}
     >
-      <span
-        className="text-white whitespace-nowrap text-nowrap -translate-y-[calc(100%_+_3px)] inline-flex flex-nowrap items-center gap-3 px-1 min-w-full"
-        style={{
-          backgroundColor: bgColor,
-        }}
-      >
-        {status === "loading" && <Spinner size="sm" />}
-        {percentage >= 50 ? (
-          <>
-            {status === "success" ? (
-              <CheckCircle size={18} />
-            ) : (
-              <InfoIcon size={18} />
-            )}
-            {`${label ?? "..."} ${percentage.toFixed(2)}%`}
-          </>
-        ) : (
-          <>
-            <InfoIcon size={18} />
-            Unknown
-          </>
+      <div className="absolute bottom-full left-0 grid grid-rows-auto">
+        {loadingStart[0] && (
+          <span className="inline-flex items-center gap-2 p-1" style={{ backgroundColor: "yellow" }}>
+            <TimerIcon />
+            {
+              (((loadingEnd[0] ?? Date.now()) - loadingStart[0]) / 1000) + "s"
+            }
+          </span>
         )}
-      </span>
+        <span
+          className="whitespace-nowrap text-nowrap inline-flex items-center gap-2 p-1"
+          style={{
+            backgroundColor: bgColor,
+          }}
+        >
+          {status === "loading" && <Spinner size="sm" />}
+          {percentage >= 50 ? (
+            <>
+              {status === "success" ? (
+                <CheckCircle size={18} />
+              ) : (
+                <InfoIcon size={18} />
+              )}
+              {`${label ?? "..."} ${percentage.toFixed(2)}%`}
+            </>
+          ) : (
+            <>
+              <InfoIcon size={18} />
+              Unknown
+            </>
+          )}
+        </span>
+      </div>
     </div>
   );
 }
